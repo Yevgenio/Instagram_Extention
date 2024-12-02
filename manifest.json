@@ -1,0 +1,36 @@
+{
+  "name": "Instagram Category Analyzer",
+  "version": "1.0.0",
+  "description": "Upload and view Instagram category analysis results.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "idle",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.instagram.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.instagram.com/*"],
+      "js": ["contentScript.js", "content/articleScript.js"],
+      "css": ["content/articleScript.css"]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/ext-icon.png",
+      "24": "assets/ext-icon.png",
+      "32": "assets/ext-icon.png"
+    },
+    "default_title": "Instagram Category Analyzer",
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 3
+}

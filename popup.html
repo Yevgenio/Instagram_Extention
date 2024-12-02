@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram Activity Tracker</title>
+    <link rel="stylesheet" type="text/css" href="popup.css"> <!-- Link to external CSS file -->
+</head>
+<body>
+    <div class="container">
+
+    </div>
+
+
+
+    <div class="tab-container">
+        <button id="tab1" class="tab-button">Activity</button>
+        <button id="tab2" class="tab-button">Rating</button>
+        <button id="tab3" class="tab-button">Stats</button>
+        <!-- Add more tabs as needed -->
+    </div>
+
+    <div id="container1" class="tab-content">
+        <h2>Instagram Activity Tracker</h2>
+        
+        <!-- Button to export session data -->
+        <button id="exportButton">Export Session Data</button>
+
+        <!-- Header for the last 5 sessions table -->
+        <h3>Last 5 Sessions</h3>
+
+        <!-- Table to display the last 5 sessions -->
+        <table id="sessionTable">
+            <thead>
+                <tr>
+                    <th>Session #</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="sessionTableBody">
+                <!-- Rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="container2" class="tab-content">
+        <h2>Upload Analysis Result</h2>
+        <input type="file" id="fileInput" />
+        <button id="uploadButton">Upload</button>
+    
+        <div class="search-container">
+          <input type="text" id="usernameInput" placeholder="Enter username" />
+          <button id="getCategoryButton">Get Category</button>
+          <div id="searchResult"></div>
+        </div>
+    
+        <div id="result"></div>
+    </div>
+
+    <div id="container3" class="tab-content">
+        <h2>Settings</h2>
+        <p>Session Timeout:</p>
+        <!-- Add your content here -->
+    </div>
+
+
+
+    <!-- Include the JavaScript file at the end -->
+    <script type="module" src="popup.js"></script>
+</body>
+</html>
