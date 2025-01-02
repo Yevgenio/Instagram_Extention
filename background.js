@@ -120,10 +120,12 @@ function handleEvent() {
 // Listen for tab changes (switching tabs, closing tab, etc.)
 chrome.tabs.onActivated.addListener(() => {
     handleEvent();
+    monitorURLDuringSession();
 });
 
 chrome.tabs.onUpdated.addListener(() => {
     handleEvent();
+    monitorURLDuringSession();
 });
 
 chrome.tabs.onRemoved.addListener(() => {
@@ -171,4 +173,60 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         }
       });
     }
-  });
+});
+
+
+
+let currentURL = null;
+let urlStartTime = null;
+
+// Track URL change during an active session
+function logURLChange(newURL) {
+    const now = new Date();
+    if (currentURL) {
+        // End the current URL session
+        const duration = (now - urlStartTime) / 1000; // Duration in seconds
+        console.log(`URL: ${currentURL}, Duration: ${duration}s`);
+        saveURLSession(currentURL, urlStartTime, now);
+    }
+
+    // Start new URL session
+    currentURL = newURL;
+    urlStartTime = now;
+}
+
+// Save URL session to local storage
+function saveURLSession(url, startTime, endTime) {
+    const session = { url, startTime: startTime.toISOString(), endTime: endTime.toISOString() };
+    chrome.storage.local.get("urlSessions", (data) => {
+        const urlSessions = data.urlSessions || [];
+        urlSessions.push(session);
+        chrome.storage.local.set({ urlSessions }, () => {
+            console.log("URL session saved:", session);
+        });
+    });
+}
+
+// Monitor active session and URL changes
+function monitorURLDuringSession() {
+    userOnTarget((isActive) => {
+        if (isActive) {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const activeTab = tabs[0];
+                if (activeTab?.url.includes("instagram.com")) {
+                    const currentPath = new URL(activeTab.url).pathname;
+                    if (currentPath !== currentURL) {
+                        logURLChange(currentPath);
+                    }
+                }
+            });
+        } else {
+            // End the current URL session if the session becomes inactive
+            if (currentURL) {
+                logURLChange(null);
+                currentURL = null;
+                urlStartTime = null;
+            }
+        }
+    });
+}

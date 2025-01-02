@@ -47,3 +47,22 @@
     background-color:rgba(0, 255, 0, 0.3); 
     border-radius: 10px;
 }
+
+/* --- --- URL timespent --- --- --- --- */
+#categoryBreakdown {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#categoryBreakdown h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#categoryBreakdown p {
+    margin: 5px 0;
+    font-size: 16px;
+}
