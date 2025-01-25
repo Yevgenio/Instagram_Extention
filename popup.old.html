@@ -17,6 +17,8 @@
         <button id="tab2" class="tab-button">Rating</button>
         <button id="tab3" class="tab-button">Stats</button>
         <button id="tab4" class="tab-button">URL Sessions</button>
+        <button id="tab5" class="tab-button">Upload Files</button> <!-- New Tab -->
+
         <!-- Add more tabs as needed -->
     </div>
 
@@ -102,9 +104,15 @@
         </table>
     </div>
 
-    
+    <div id="container5" class="tab-content"> <!-- New Tab Content -->
+        <h1>Upload Your Data Files</h1>
+        <div id="upload-container"></div>
+        <button id="process-data">Process Data</button>
+        <button id="log-data">Log Current Data</button>
+    </div>
 
     <!-- Include the JavaScript file at the end -->
     <script type="module" src="popup.js"></script>
+    <script type="module" src="popup_ig_data.js"></script>
 </body>
 </html>

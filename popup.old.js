@@ -1,25 +1,23 @@
 // - - Popup Tabbed Display - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 // Function to open a tab and show the corresponding container
 function openTab(containerId) {
-    // Get all elements with class "tab-content" and hide them
-    const tabContents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].style.display = "none";
-    }
+  const tabContents = document.getElementsByClassName("tab-content");
+  for (let i = 0; i < tabContents.length; i++) {
+      tabContents[i].style.display = "none";
+      tabContents[i].classList.remove("active");
+  }
 
-    // Get all elements with class "tab-button" and remove the class "active"
-    const tabButtons = document.getElementsByClassName("tab-button");
-    for (let i = 0; i < tabButtons.length; i++) {
-        tabButtons[i].className = tabButtons[i].className.replace(" active", "");
-    }
+  const tabButtons = document.getElementsByClassName("tab-button");
+  for (let i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].classList.remove("active");
+  }
 
-    // Show the current tab content and add an "active" class to the button that opened the tab
-    document.getElementById(containerId).style.display = "block";
-    const activeButton = document.querySelector(`button[id="${containerId.replace('container', 'tab')}"]`);
-    if (activeButton) {
-        activeButton.classList.add("active");
-    }
+  document.getElementById(containerId).classList.add("active");
+  const activeButton = document.querySelector(`button[id="${containerId.replace('container', 'tab')}"]`);
+  if (activeButton) {
+      tabContents[i].style.display = "block";
+      activeButton.classList.add("active");
+  }
 }
 
 // Set up event listeners for the tab buttons
@@ -28,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('tab2').addEventListener('click', () => openTab('container2'));
     document.getElementById('tab3').addEventListener('click', () => openTab('container3'));
     document.getElementById('tab4').addEventListener('click', () => openTab('container4'));
+    document.getElementById('tab5').addEventListener('click', () => openTab('container5')); // New Tab
     // Open the first tab by default
     openTab('container1');
 });
@@ -102,7 +101,11 @@ function displayLastSessions(sessionData) {
 
 // - - Ranking Display - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-import { getActiveTabURL } from "./utils.js";
+async function getActiveTabURL() {
+  const queryOptions = { active: true, lastFocusedWindow: true };
+  const [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
 
 let rankingResult = null;
 let foundCategory = '';
@@ -138,14 +141,14 @@ function displayResult(result) {
   const resultDiv = document.getElementById('result');
   resultDiv.innerHTML = '';
 
-  if (result && result.a_b_cForUser) {
+  if (result && result) {
     ['a', 'b', 'c'].forEach(category => {
       const categoryDiv = document.createElement('div');
       const title = document.createElement('h3');
       title.textContent = `Category ${category.toUpperCase()}`;
       categoryDiv.appendChild(title);
 
-      result.a_b_cForUser[category].forEach(item => {
+      result[category].forEach(item => {
         const p = document.createElement('p');
         p.textContent = `Name: ${item.name}, Count: ${item.count}`;
         categoryDiv.appendChild(p);
@@ -165,10 +168,10 @@ document.getElementById('getCategoryButton').addEventListener('click', function(
   const searchResultDiv = document.getElementById('searchResult');
   searchResultDiv.innerHTML = '';
 
-  if (rankingResult && rankingResult.a_b_cForUser) {
+  if (rankingResult && rankingResult) {
     let found = false;
     ['a', 'b', 'c'].forEach(category => {
-      rankingResult.a_b_cForUser[category].forEach(item => {
+      rankingResult[category].forEach(item => {
         if (item.name.toLowerCase() === username.toLowerCase()) {
           found = true;
           foundCategory = `Category: ${category.toUpperCase()}`;
@@ -241,8 +244,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           function findCategory(username, result) {
             for (let category of ['a', 'b', 'c']) {
-              if (result.a_b_cForUser && result.a_b_cForUser[category]) {
-                for (let item of result.a_b_cForUser[category]) {
+              if (result && result[category]) {
+                for (let item of result[category]) {
                   if (item.name.toLowerCase() === username.toLowerCase()) {
                     return category.toUpperCase();
                   }

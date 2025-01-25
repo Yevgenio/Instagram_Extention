@@ -1,23 +1,14 @@
 function mapArticle(article) {
-    try {
+   try {
         const container = article.getElementsByClassName('x78zum5 xdt5ytf x5yr21d xa1mljc xh8yej3 x1bs97v6 x1q0q8m5 xso031l x11aubdm xnc8uc2')[0];
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
-//.getElementsByClassName('');
 
             const header = container.getElementsByClassName('xsag5q8 x1e558r4')[0];
                 //const avatar = header.xq8finb
                 const title = header.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1iyjqo2 x2lwn1j xeuugli x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
                     const title_top = title.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
                         const author = title_top.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
-                        const time = title_top.getElementsByTagName("time")[0];
+                        
+                        const time = title_top.getElementsByTagName("time")[0]; 
                         const post_id = time.parentElement.parentElement;
                     //const title_bot = author.children[1];
                 const menu_button = header.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
@@ -43,51 +34,10 @@ function mapArticle(article) {
         }
         
         return mappedArticle;
-    }
-    catch (e) { 
-        console.log('mapping error: ', e);
-        return null; }
+   }
+   catch { 
+       return null; }
 }
-
-function mapArticle2(article) {
-    try {
-        const container = article.firstChild;
-
-            const header = container.children[0].firstChild;
-                const avatar = header.children[0];
-                const title = header.children[1].firstChild;
-                    const title_top = title.children[0];
-                        const author = title_top.children[0];
-                        const time = title_top.getElementsByTagName("time")[0];
-                        const post_id = time.parentElement.parentElement;
-                    //const title_bot = author.children[1];
-                const menu_button = header.children[2].firstChild;
-
-            const content = container.children[1];
-                const hasVideo = content.getElementsByTagName("video")[0] ? true : false;
-    //x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1
-    //x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh x1nhvcw1
-            const footer = container.children[2];
-                const dashbord = footer.firstChild.firstChild.firstChild.firstChild;
-                    const like_button = dashbord.children[0];
-                    //const comment_button = dashbord.children[1];
-                    //const share_button = dashbord.children[2];
-
-        const mappedArticle = {
-            title: title,
-            author: author,
-            post_id: post_id,
-            avatar: avatar,
-            hasVideo: hasVideo,
-            like_button: like_button,
-            menu_button: menu_button,
-        }
-        
-        return mappedArticle;
-    }
-    catch { return null; }
-}
-
 
 // Utility function to create an element with properties
 function buildElement(tag, props = {}) {
@@ -96,16 +46,15 @@ function buildElement(tag, props = {}) {
     return elem;
 }
 
+function isElementAlive(element) {
+    console.log("element: ", element, "contains:", document.body.contains(element));
+    return element != null && document.body.contains(element);
+}
+
 document.addEventListener('scroll', () => {
-
-    // console.log('111');
-    // const aaa = document.body.getElementsByClassName('x78zum5 xdt5ytf x5yr21d xa1mljc xh8yej3 x1bs97v6 x1q0q8m5 xso031l x11aubdm xnc8uc2');
-    // console.log(aaa);
-
-   handleScroll();
+    handleScroll();
     fetchArticles();
-
-
+    !isElementAlive(breakdownContainer) && updateCategoryBreakdown();
 });
 
 // Local storage key
@@ -179,10 +128,10 @@ const authorTimeMap = new Map(); // Tracks total time per author
 
 function fetchArticles() {
 
-
     const articles = document.body.getElementsByTagName("article");
-    console.log(articles);
 
+    const rankingResult = getCategorizedData();
+    console.log("rankingResult from getCategorizedData:", rankingResult);
     Array.from(articles).forEach((article) => {
         const mappedArticle = mapArticle(article); //turn article into object
         if (!mappedArticle) return;
@@ -190,13 +139,8 @@ function fetchArticles() {
         const { post_id, author, like_button } = mappedArticle;
         //const inView = isArticleInView(article);
 
-        // Add abc-rating if not already added
-        if (!author.parentElement.parentElement.querySelector('.abc-rating')) {
-            const abc_rating = buildElement('div', {
-                classList: "abc-rating",
-                innerHTML: "<h1>Rating: A</h1>", // Example content for the rating
-            });
-            post_id.parentElement.parentElement.after(abc_rating); // Add the abc-rating right after the author's element
+        if(rankingResult) {
+            addCategoryToArticle(article, author, post_id, rankingResult)
         }
         // Store the post_id associated with this article element
         articleIdMap.set(article, post_id);
@@ -371,7 +315,7 @@ function showTopAuthorsToday(trackingData) {
     authorArray.sort((a, b) => b.totalTimeToday - a.totalTimeToday);
 
     // Take top 10
-    const topAuthors = authorArray.slice(0, 10);
+    const topAuthors = authorArray.slice(0, 5);
 
     if(!topAuthorsContainer || !document.body.contains(topAuthorsContainer)) {
         // Create a container for the top authors list
@@ -379,14 +323,14 @@ function showTopAuthorsToday(trackingData) {
         topAuthorsContainer.id = "topAuthorsToday";
     }
     
-    topAuthorsContainer.innerHTML = "<h2>Top 10 Authors Today</h2>";
+    topAuthorsContainer.innerHTML = "<h2>Top 5 Authors Today</h2>";
 
     // Create a table or list to display the data
     const table = document.createElement('table');
     table.innerHTML = `
       <tr>
         <th>Author</th>
-        <th>View Time</th>
+        <th>Time</th>
         <th>Likes</th>
       </tr>
     `;
@@ -646,12 +590,14 @@ function calculateCategoryBreakdown(urlSessions) {
     return breakdown;
 }
 
+let breakdownContainer = null;
+
 function displayCategoryBreakdown(breakdown) {
     const trackingContainer = setupTrackingContainer();
 
     // Check if the breakdown container already exists
-    let breakdownContainer = document.getElementById("categoryBreakdown");
-    if (!breakdownContainer) {
+    breakdownContainer = document.getElementById("categoryBreakdown");
+    if (!breakdownContainer || !body.contains(breakdownContainer)) {
         breakdownContainer = buildElement("div", { id: "categoryBreakdown" });
         trackingContainer.appendChild(breakdownContainer);
     }
@@ -667,7 +613,10 @@ function displayCategoryBreakdown(breakdown) {
 }
 
 function updateCategoryBreakdown() {
+
+    console.log("Updating category breakdown...");
     chrome.storage.local.get("urlSessions", (data) => {
+        console.log(data);
         const urlSessions = data.urlSessions || [];
         const today = new Date().toISOString().split("T")[0];
 
@@ -681,8 +630,7 @@ function updateCategoryBreakdown() {
     });
 }
 
-// Call the function to update the breakdown
-updateCategoryBreakdown();
+
 
 // Optionally, you can observe changes in `urlSessions` and re-update
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -691,3 +639,158 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 
+/// ===== Ranking by ABC =======================================
+
+// Function to add category information to usernames
+
+function addCategoryToArticle(article, author, post_id, rankingResult) {
+
+    function findCategory(username, result) {
+        for (let item of result) {
+            if (item.name.toLowerCase() === username.toLowerCase()) {
+                return item.category;
+            }
+        }
+        return null;
+    }
+
+    let username = author.textContent.trim();
+
+    if (username.includes('Verified')) {
+        username = username.replace('Verified', '').trim();
+    }
+
+    const category = findCategory(username, rankingResult) || "N/A";
+
+    if (!author.parentElement.parentElement.querySelector('.abc-rating-container')) {
+        const abc_rating_container = document.createElement('div');
+        abc_rating_container.classList.add('abc-rating-container');
+
+        const abc_rating = document.createElement('div');
+        abc_rating.classList.add('abc-rating');
+        abc_rating.innerHTML = `<h1>Rating: ${category}</h1>`;
+
+        const edit_icon = document.createElement('span');
+        edit_icon.classList.add('edit-rating-icon');
+        edit_icon.innerHTML = '🖉'; // Use an edit icon or any symbol
+
+        const dropdown = document.createElement('select');
+        dropdown.classList.add('rating-dropdown');
+        dropdown.style.display = 'none'; // Hide the dropdown by default
+        ['', 'A', 'B', 'C'].forEach(optionText => {
+            const option = document.createElement('option');
+            option.value = optionText;
+            option.textContent = 'Rating: ' + optionText;
+            dropdown.appendChild(option);
+            console.log("option: ", option);
+        });
+
+        abc_rating_container.appendChild(abc_rating);
+        abc_rating_container.appendChild(dropdown);
+        abc_rating_container.appendChild(edit_icon);
+
+        post_id.parentElement.parentElement.after(abc_rating_container);
+
+        // Minimize feature
+        if (category === 'C' || category === 'N/A') {
+            //const postContent = article.getElementsByClassName("x6s0dn4 xyzq4qe x78zum5 xdt5ytf x2lah0s xl56j7k x6ikm8r x10wlt62 x1n2onr6 x5ur3kl xopu45v x1bs97v6 xmo9t06 x1lcm9me x1yr5g0i xrt01vj x10y3i5r x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x178xt8z xm81vs4 xso031l xy80clv")[0];
+            article.classList.add('minimized');
+            const toggleButton = document.createElement('button');
+            toggleButton.textContent = 'Expand';
+            toggleButton.classList.add('toggle-button');
+
+            toggleButton.addEventListener('click', () => {
+                if (article.classList.contains('minimized')) {
+                    article.classList.remove('minimized');
+                    toggleButton.textContent = 'Minimize';
+                } else {
+                    article.classList.add('minimized');
+                    toggleButton.textContent = 'Expand';
+                }
+            });
+
+            article.appendChild(toggleButton);
+        }
+
+        abc_rating_container.addEventListener('mouseover', () => {
+            if (dropdown.style.display === 'none') {
+                edit_icon.style.visibility = 'visible';
+            } else {
+                edit_icon.style.visibility = 'hidden';
+            }
+        });
+
+        abc_rating_container.addEventListener('mouseout', () => {
+            edit_icon.style.visibility = 'hidden';
+        });
+
+        abc_rating_container.addEventListener('click', () => {
+            abc_rating.style.display = 'none';
+            dropdown.style.display = 'block';
+            edit_icon.style.visibility = 'hidden';
+        });
+
+        dropdown.addEventListener('change', () => {
+            console.log("Selected value: ", dropdown, " value", dropdown.value);
+            const selectedValue = dropdown.value;
+            const selectedLabel = 'Rating: ' + selectedValue;
+
+            // Update rating display
+            abc_rating.innerHTML = `<h1>${selectedLabel}</h1>`;
+            abc_rating.style.display = 'block';
+            dropdown.style.display = 'none';
+
+            // Update categorizedData
+            if (categorizedData) {
+                // Find user in categorizedData
+                let user = categorizedData.find(user => user.name.toLowerCase() === username.toLowerCase());
+                if (user) {
+                    // Update user's category
+                    user.category = selectedValue;
+                } else {
+                    // Add new user to categorizedData
+                    user = { name: username, count: 0, category: selectedValue };
+                    categorizedData.push(user);
+                }
+
+                // Save updated categorizedData to local storage
+                chrome.storage.local.set({ categorizedData }, () => {
+                    console.log("Updated categorizedData saved:", categorizedData);
+                });
+            }
+        });
+    }
+}
+
+  
+// Check if categorized data exists in local storage on load
+chrome.storage.local.get("categorizedData", (data) => {
+if (data.categorizedData) {
+    console.log("Using stored categorizedData:", data.categorizedData);
+    categorizedDataLoaded = true;
+    categorizedData = data.categorizedData;
+} else {
+    console.log("No categorizedData found in local storage.");
+}
+});
+  
+let categorizedDataLoaded = false;
+let categorizedData = null;
+
+  // Check on scroll if categorizedData is loaded, if not read from storage
+function getCategorizedData() {
+    if (!categorizedData) {
+      chrome.storage.local.get("categorizedData", (data) => {
+        if (data.categorizedData) {
+          console.log("Using stored categorizedData on scroll:", data.categorizedData);
+          categorizedData = data.categorizedData;
+        } else {
+          console.log("No categorizedData found in local storage on scroll.");
+        }
+        return;
+      });
+    }
+    console.log("categorizedData:", categorizedData);
+    return categorizedData;
+}
+  

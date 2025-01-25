@@ -8,12 +8,68 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <h1>Upload Your Data Files</h1>
+
   
-  <div id="upload-container"></div>
+  <div class="tab-container">
+    <button id="tab1" class="tab-button">Data</button>
+    <button id="tab2" class="tab-button">Sessions</button>
+    <button id="tab3" class="tab-button">URL Sessions</button>
+  </div>  
 
-  <button id="process-data">Process Data</button>
+  <div id="container1" class="tab-content">
+    <h1>Upload Your Data Files</h1>
 
-  <button id="log-data">Log Current Data</button>
+    <div id="upload-container"></div>
+
+    <div id="button-container">
+      <button id="process-data">Process Data Ranking</button>
+      <button id="log-data">Download Processed JSON</button>
+    </div>
+
+    <div id="currentData"></div>
+  </div>
+
+
+  <div id="container2" class="tab-content">
+    <h2>Session Tracker</h2>
+        
+        <!-- Button to export session data -->
+        <button id="exportButton">Export Session Data</button>
+
+        <!-- Header for the last 5 sessions table -->
+        <h3>Last 5 Sessions</h3>
+
+        <!-- Table to display the last 5 sessions -->
+        <table id="sessionTable">
+            <thead>
+                <tr>
+                    <th>Session #</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="sessionTableBody">
+                <!-- Rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+  </div>
+
+
+  <div id="container3" class="tab-content">
+    <h2>URL Sessions</h2>
+    <table id="urlSessionTable">
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <!-- <th>Duration</th> -->
+            </tr>
+        </thead>
+        <tbody id="urlSessionTableBody">
+            <!-- URL session rows will be populated dynamically -->
+        </tbody>
+    </table>
 </body>
 </html>
