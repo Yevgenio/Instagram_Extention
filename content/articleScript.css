@@ -251,3 +251,9 @@
     padding: 5px 10px;
     font-size: 14px;
 }
+
+/* Story Shuffle - - - - - - - - - */
+li._acaz {
+    transition: transform 1s ease-in-out;
+    will-change: transform;
+}

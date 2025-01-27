@@ -47,7 +47,6 @@ function buildElement(tag, props = {}) {
 }
 
 function isElementAlive(element) {
-    console.log("element: ", element, "contains:", document.body.contains(element));
     return element != null && document.body.contains(element);
 }
 
@@ -72,7 +71,6 @@ function loadTrackingData() {
 // Utility to save data
 function saveTrackingData() { 
     localStorage.setItem(LS_KEY, JSON.stringify(trackingData));
-    // console.log(JSON.stringify(trackingData));
 }
 
 // Cache for shortcut container and buttons
@@ -110,7 +108,6 @@ function isArticleInView(article) {
 
 function logLike(articleLog, post_id) {
     articleLog.style.backgroundColor = "lightcoral";
-    console.log("liked!");
     // Update is_liked in the stored data
     if (trackingData[post_id]) {
         trackingData[post_id].is_liked = true;
@@ -131,7 +128,6 @@ function fetchArticles() {
     const articles = document.body.getElementsByTagName("article");
 
     const rankingResult = getCategorizedData();
-    console.log("rankingResult from getCategorizedData:", rankingResult);
     Array.from(articles).forEach((article) => {
         const mappedArticle = mapArticle(article); //turn article into object
         if (!mappedArticle) return;
@@ -144,7 +140,6 @@ function fetchArticles() {
         }
         // Store the post_id associated with this article element
         articleIdMap.set(article, post_id);
-        // console.log(articleIdMap);
         // Ensure we have a tracking entry for this post_id
         if (!trackingData[post_id]) {
             trackingData[post_id] = {
@@ -399,12 +394,6 @@ function handleScroll() {
     }
 }
 
-
-// Save cumulative author time in memory (example)
-function saveAuthorTimeData() {
-    console.log("Author Time Data:", Array.from(authorTimeMap.entries()));
-}
-
 // Format time to a more user friendly display
 function formatDuration(duration) {
     if (duration < 60) {
@@ -493,9 +482,6 @@ function calculateAndDisplayAverageDailySessionTime() {
 
         const longestSessionFormatted = `${longestSessionDay.date}: ${formatDuration(longestSessionDay.duration)}`;
         const shortestSessionFormatted = `${shortestSessionDay.date}: ${formatDuration(shortestSessionDay.duration)}`;
-
-        console.log(`Longest Time: ${longestSessionFormatted}`);
-        console.log(`Shortest Time: ${shortestSessionFormatted}`);
     });
 }
 
@@ -505,7 +491,6 @@ function calculateSessionStatistics(sessionMapByDay) {
     const dates = Array.from(sessionMapByDay.keys()).sort((a, b) => new Date(a) - new Date(b));
 
     if (dates.length === 0) {
-        console.log("Session storage is empty.");
         return {
             totalEntries: 1,
             totalDuration: 0,
@@ -613,10 +598,7 @@ function displayCategoryBreakdown(breakdown) {
 }
 
 function updateCategoryBreakdown() {
-
-    console.log("Updating category breakdown...");
     chrome.storage.local.get("urlSessions", (data) => {
-        console.log(data);
         const urlSessions = data.urlSessions || [];
         const today = new Date().toISOString().split("T")[0];
 
@@ -660,7 +642,7 @@ function addCategoryToArticle(article, author, post_id, rankingResult) {
         username = username.replace('Verified', '').trim();
     }
 
-    const category = findCategory(username, rankingResult) || "N/A";
+    const category = findCategory(username, rankingResult) || '?';
 
     if (!author.parentElement.parentElement.querySelector('.abc-rating-container')) {
         const abc_rating_container = document.createElement('div');
@@ -682,7 +664,6 @@ function addCategoryToArticle(article, author, post_id, rankingResult) {
             option.value = optionText;
             option.textContent = 'Rating: ' + optionText;
             dropdown.appendChild(option);
-            console.log("option: ", option);
         });
 
         abc_rating_container.appendChild(abc_rating);
@@ -692,7 +673,7 @@ function addCategoryToArticle(article, author, post_id, rankingResult) {
         post_id.parentElement.parentElement.after(abc_rating_container);
 
         // Minimize feature
-        if (category === 'C' || category === 'N/A') {
+        if (category === 'C' || category === '?') {
             //const postContent = article.getElementsByClassName("x6s0dn4 xyzq4qe x78zum5 xdt5ytf x2lah0s xl56j7k x6ikm8r x10wlt62 x1n2onr6 x5ur3kl xopu45v x1bs97v6 xmo9t06 x1lcm9me x1yr5g0i xrt01vj x10y3i5r x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x178xt8z xm81vs4 xso031l xy80clv")[0];
             article.classList.add('minimized');
             const toggleButton = document.createElement('button');
@@ -731,7 +712,6 @@ function addCategoryToArticle(article, author, post_id, rankingResult) {
         });
 
         dropdown.addEventListener('change', () => {
-            console.log("Selected value: ", dropdown, " value", dropdown.value);
             const selectedValue = dropdown.value;
             const selectedLabel = 'Rating: ' + selectedValue;
 
@@ -755,7 +735,7 @@ function addCategoryToArticle(article, author, post_id, rankingResult) {
 
                 // Save updated categorizedData to local storage
                 chrome.storage.local.set({ categorizedData }, () => {
-                    console.log("Updated categorizedData saved:", categorizedData);
+                    //..
                 });
             }
         });
@@ -782,15 +762,197 @@ function getCategorizedData() {
     if (!categorizedData) {
       chrome.storage.local.get("categorizedData", (data) => {
         if (data.categorizedData) {
-          console.log("Using stored categorizedData on scroll:", data.categorizedData);
           categorizedData = data.categorizedData;
         } else {
-          console.log("No categorizedData found in local storage on scroll.");
+          // ..
         }
         return;
       });
     }
-    console.log("categorizedData:", categorizedData);
     return categorizedData;
 }
-  
+
+// story reshuffle -------------------------------
+let isProcessing = false;
+
+let story_hideC = false;
+let story_sort = false;
+
+
+// Create a single persistent listener
+document.addEventListener('click', function buttonHandler(event) {
+    // Check if clicked element matches either button type
+    setTimeout(() => {
+        const button = event.target.closest(
+            'button._afxv._al46._aahm._akl_._al47, ' +
+            'button._afxw._al46._aahm._akl_._al47'
+        );
+    
+
+    if (button && !isProcessing) {
+        isProcessing = true;
+        console.log("Button clicked");
+        
+        // Run your story sort logic
+        // Initial check for the "Go Back" button
+        isFirstPage = !checkGoBackButton();
+
+        storyRank(sort = (story_sort && isFirstPage));
+        
+        // Reset after operation completes
+        setTimeout(() => {
+            isProcessing = false;
+        }, 1000);
+    }
+    }, 1000);
+});
+
+// Function to check for the existence of the "Go Back" button
+function checkGoBackButton() {
+    const goBackButton = document.querySelector('button._afxv._al46._aahm._akl_._al47');
+
+    if (goBackButton) {
+        storyRankButton.style.transition = 'left 0.5s ease';
+        storyRankButton.style.left = '150px';
+        setTimeout(() => {
+            storyRankButton.style.display = 'none';
+        }, 500);
+        return true;
+    } else {
+        storyRankButton.style.display = 'block';
+        setTimeout(() => {
+            storyRankButton.style.transition = 'left 0.5s ease';
+            storyRankButton.style.left = '205px';
+        }, 100);
+        return false;
+    }
+}
+
+
+
+// Initial sort after page load
+setTimeout(() => {
+    createSortButton();
+    storyRank(sort = false);
+}, 2000);
+
+function storyRank(sort) {
+    if(sort) story_sort = true;
+    const rankedList = categorizedData;
+
+    const storiesList = document.querySelector('ul._acay');
+    const items = Array.from(storiesList.querySelectorAll('li._acaz'));
+
+    let deviation = 0;
+    // Extract names from story items
+    items.forEach(item => {
+        const nameDiv = item.querySelector('div[dir="auto"] div');
+        item.dataset.originalName = nameDiv ? nameDiv.textContent.trim() : '';
+
+        const category = rankedList.find(r => r.name === item.dataset.originalName)?.category || '?';
+
+        
+        if (category != "A" && category != "B") {
+            item.style.opacity = '0.7';
+            item.style.filter = 'grayscale(90%)';
+        }
+
+        // Add/update category badge
+        let badge = item.querySelector('.category-badge');
+        if (!badge) {
+            badge = document.createElement('div');
+            badge.className = 'category-badge';
+            Object.assign(badge.style, {
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                background: 'rgba(0, 0, 0, 0.7)',
+                color: 'white',
+                padding: '2px 6px',
+                borderRadius: '12px',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                zIndex: '1000'
+            });
+            item.appendChild(badge);
+        }
+        badge.textContent = category;
+    });
+
+    if(!sort) return;
+
+    // Sort items based on category and ranking list
+    const sortedItems = items.sort((a, b) => {
+        const aCategory = rankedList.find(r => r.name === a.dataset.originalName)?.category || '?';
+        const bCategory = rankedList.find(r => r.name === b.dataset.originalName)?.category || '?';
+        const aRank = rankedList.find(r => r.name === a.dataset.originalName)?.rating || 0;
+        const bRank = rankedList.find(r => r.name === b.dataset.originalName)?.rating || 0;
+
+        if (aCategory === bCategory) {
+            return bRank - aRank; // Sort by rating within the same category
+        } else {
+            return aCategory.localeCompare(bCategory); // Sort by category
+        }
+    });
+
+    console.log("sortedItems: ", sortedItems);
+
+    // Maintain an array of occupied positions
+    const occupiedPositions = []; // Tracks taken positions (e.g., [2, 82, 162, ...])
+    const positionStep = 80; // Distance between positions (px)
+
+    // Add category badges and assign new positions
+    sortedItems.forEach(item => {
+        
+        // Determine the next available position
+        let newPosition = 2; // Start from 2px
+        while (occupiedPositions.includes(newPosition)) {
+            newPosition += positionStep; // Increment by step until an available position is found
+        }
+        occupiedPositions.push(newPosition); // Mark position as occupied
+
+        // Set new position with transition
+        item.style.transition = 'transform 1s ease-in-out';
+        item.style.transform = `translateX(${newPosition}px)`;
+    });
+
+    // Force DOM reflow to trigger animation
+    void storiesList.offsetHeight;
+
+    // Update container scroll position if needed
+    storiesList.scrollTo({ left: 0, behavior: 'smooth' });
+}
+
+const storyRankButton = document.createElement('button');
+function createSortButton() {
+    storyRankButton.innerText = 'Sort';
+    storyRankButton.style.position = 'absolute';
+    storyRankButton.style.left = '150px';
+    storyRankButton.style.top = '50px';
+    storyRankButton.style.transform = 'translateY(-50%)';
+    storyRankButton.style.rotate = "90deg";
+    storyRankButton.style.backgroundColor = 'white';
+    storyRankButton.style.color = 'black';
+    storyRankButton.style.border = 'none';
+    storyRankButton.style.borderRadius = '12px 12px 0px 0px';
+    storyRankButton.style.padding = '10px 20px';
+    storyRankButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+    storyRankButton.style.cursor = 'pointer';
+    storyRankButton.style.transition = 'background-color 0.3s ease';
+
+    storyRankButton.addEventListener('mouseover', () => {
+        storyRankButton.style.backgroundColor = '#f0f0f0';
+    });
+
+    storyRankButton.addEventListener('mouseout', () => {
+        storyRankButton.style.backgroundColor = 'white';
+    });
+    storyRankButton.addEventListener('click', () => storyRank(true));
+
+    const targetDiv = document.querySelector('.xmnaoh6');
+    if (targetDiv) {
+        targetDiv.appendChild(storyRankButton);
+    }
+
+    checkGoBackButton();
+}
