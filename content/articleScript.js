@@ -793,7 +793,7 @@ function checkGoBackButton() {
 
     if (goBackButton) {
         storyRankButton.style.transition = 'left 0.5s ease';
-        storyRankButton.style.left = '150px';
+        storyRankButton.style.left = '-270px';
         setTimeout(() => {
             storyRankButton.style.display = 'none';
         }, 500);
@@ -802,7 +802,7 @@ function checkGoBackButton() {
         storyRankButton.style.display = 'block';
         setTimeout(() => {
             storyRankButton.style.transition = 'left 0.5s ease';
-            storyRankButton.style.left = '205px';
+            storyRankButton.style.left = '-225px';
         }, 100);
         return false;
     }
@@ -823,37 +823,21 @@ function storyRank(sort) {
     const storiesList = document.querySelector('ul._acay');
     const items = Array.from(storiesList.querySelectorAll('li._acaz'));
 
-    let deviation = 0;
     // Extract names from story items
     items.forEach(item => {
         const nameDiv = item.querySelector('div[dir="auto"] div');
         item.dataset.originalName = nameDiv ? nameDiv.textContent.trim() : '';
-
+    
         const category = rankedList.find(r => r.name === item.dataset.originalName)?.category || '?';
-
-        
-        if (category != "A" && category != "B") {
-            item.style.opacity = '0.7';
-            item.style.filter = 'grayscale(90%)';
-        }
-
+    
+        // Apply dimmed style using CSS class
+        item.classList.toggle('dimmed', !['A', 'B'].includes(category));
+    
         // Add/update category badge
         let badge = item.querySelector('.category-badge');
         if (!badge) {
             badge = document.createElement('div');
             badge.className = 'category-badge';
-            Object.assign(badge.style, {
-                position: 'absolute',
-                top: '4px',
-                right: '4px',
-                background: 'rgba(0, 0, 0, 0.7)',
-                color: 'white',
-                padding: '2px 6px',
-                borderRadius: '12px',
-                fontSize: '10px',
-                fontWeight: 'bold',
-                zIndex: '1000'
-            });
             item.appendChild(badge);
         }
         badge.textContent = category;
@@ -906,29 +890,11 @@ function storyRank(sort) {
 }
 
 const storyRankButton = document.createElement('button');
+
 function createSortButton() {
+    storyRankButton.className = 'sort-button';
     storyRankButton.innerText = 'Sort';
-    storyRankButton.style.position = 'absolute';
-    storyRankButton.style.left = '150px';
-    storyRankButton.style.top = '50px';
-    storyRankButton.style.transform = 'translateY(-50%)';
-    storyRankButton.style.rotate = "90deg";
-    storyRankButton.style.backgroundColor = 'white';
-    storyRankButton.style.color = 'black';
-    storyRankButton.style.border = 'none';
-    storyRankButton.style.borderRadius = '12px 12px 0px 0px';
-    storyRankButton.style.padding = '10px 20px';
-    storyRankButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-    storyRankButton.style.cursor = 'pointer';
-    storyRankButton.style.transition = 'background-color 0.3s ease';
-
-    storyRankButton.addEventListener('mouseover', () => {
-        storyRankButton.style.backgroundColor = '#f0f0f0';
-    });
-
-    storyRankButton.addEventListener('mouseout', () => {
-        storyRankButton.style.backgroundColor = 'white';
-    });
+    
     storyRankButton.addEventListener('click', () => storyRank(true));
 
     const targetDiv = document.querySelector('.xmnaoh6');
