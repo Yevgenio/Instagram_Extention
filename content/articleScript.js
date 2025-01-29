@@ -129,6 +129,13 @@ function fetchArticles() {
 
     const rankingResult = getCategorizedData();
     Array.from(articles).forEach((article) => {
+        //check if the element has an element qith class name "x1fhwpqd x132q4wb x5n08af"
+        const articleAd = article.querySelector('.x1fhwpqd.x132q4wb.x5n08af');
+        if(articleAd) {
+            //article.classList.add('minimized'); // add class ad to the article if it is an ad
+            article.style.display = 'none'; // hide the article if it is an ad
+        }
+
         const mappedArticle = mapArticle(article); //turn article into object
         if (!mappedArticle) return;
 
@@ -461,7 +468,7 @@ function calculateAndDisplayAverageDailySessionTime() {
             const todaysFormatted = formatDuration(todaysDuration);
 
             const deltaDuration = Math.abs(averageDuration - todaysDuration);
-            const deltaFormatted = formatDuration(deltaDuration);
+            const deltaFormatted = formatDuration(deltaDuration + 1);
 
             const over_under = averageDuration < todaysDuration ? "deviation" : "reduction";
 
@@ -582,7 +589,7 @@ function displayCategoryBreakdown(breakdown) {
 
     // Check if the breakdown container already exists
     breakdownContainer = document.getElementById("categoryBreakdown");
-    if (!breakdownContainer || !body.contains(breakdownContainer)) {
+    if (!breakdownContainer || !document.body.contains(breakdownContainer)) {
         breakdownContainer = buildElement("div", { id: "categoryBreakdown" });
         trackingContainer.appendChild(breakdownContainer);
     }
@@ -888,7 +895,11 @@ function storyRank(sort) {
         const aRank = rankedList.find(r => r.name === a.dataset.originalName)?.rating || 0;
         const bRank = rankedList.find(r => r.name === b.dataset.originalName)?.rating || 0;
 
-        if (aCategory === bCategory) {
+        if (aCategory === '?' && bCategory !== '?') {
+            return 1; // Place "?" category at the end
+        } else if (aCategory !== '?' && bCategory === '?') {
+            return -1; // Place "?" category at the end
+        } else if (aCategory === bCategory) {
             return bRank - aRank; // Sort by rating within the same category
         } else {
             return aCategory.localeCompare(bCategory); // Sort by category
