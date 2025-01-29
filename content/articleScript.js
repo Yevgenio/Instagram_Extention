@@ -1,27 +1,18 @@
 function mapArticle(article) {
    try {
         const container = article.getElementsByClassName('x78zum5 xdt5ytf x5yr21d xa1mljc xh8yej3 x1bs97v6 x1q0q8m5 xso031l x11aubdm xnc8uc2')[0];
-
             const header = container.getElementsByClassName('xsag5q8 x1e558r4')[0];
-                //const avatar = header.xq8finb
                 const title = header.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1iyjqo2 x2lwn1j xeuugli x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
                     const title_top = title.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
                         const author = title_top.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
-                        
                         const time = title_top.getElementsByTagName("time")[0]; 
                         const post_id = time.parentElement.parentElement;
-                    //const title_bot = author.children[1];
                 const menu_button = header.getElementsByClassName('x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s x1q0g3np xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1')[0];
-
             const content = container.getElementsByClassName('x6s0dn4 xyzq4qe x78zum5 xdt5ytf x2lah0s xl56j7k x6ikm8r x10wlt62 x1n2onr6 x5ur3kl xopu45v x1bs97v6 xmo9t06 x1lcm9me x1yr5g0i xrt01vj x10y3i5r x13fuv20 xu3j5b3 x1q0q8m5 x26u7qi x178xt8z xm81vs4 xso031l xy80clv')[0];
                 const hasVideo = content.getElementsByTagName("video")[0] ? true : false;
-    //x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x6s0dn4 x1oa3qoh x1nhvcw1
-    //x9f619 xjbqb8w x78zum5 x168nmei x13lgxp2 x5pf9jr xo71vjh x1uhb9sk x1plvlek xryxfnj x1c4vz4f x2lah0s xdt5ytf xqjyukv x1qjc9v5 x1oa3qoh x1nhvcw1
             const footer = container.getElementsByClassName('x1lliihq x1n2onr6')[0];
                 const dashbord = footer.getElementsByClassName('x6s0dn4 xrvj5dj x1o61qjw x12nagc x1gslohp')[0];
-                    const like_button = dashbord;//.getElementsByClassName('x1i10hfl x972fbf xcfux6l x1qhh985 xm0m39n x9f619 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x6s0dn4 xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x1ypdohk x78zum5 xl56j7k x1y1aw1k x1sxyh0 xwib8y2 xurb0ha xcdnw81')[0];
-                    //const comment_button = dashbord.children[1];
-                    //const share_button = dashbord.children[2];
+                    const like_button = dashbord;
 
         const mappedArticle = {
             title: title,
@@ -88,7 +79,6 @@ function setupTrackingContainer() {
             const rightColumnContainer = mainContainer?.firstChild?.lastChild;
             if(!rightColumnContainer) return;
             trackingContainer = buildElement('div',{id: 'trackingContainer'});
-            // trackingContainer.innerHTML = "<h1>LOG CONTAINER:</h1>"
             rightColumnContainer.appendChild(trackingContainer);
         }
     }
@@ -115,16 +105,12 @@ function logLike(articleLog, post_id) {
     }
 }
 
-// Track articles already logged and listeners
 const loggedArticles = new Map();
-const activeTimers = new Map(); // Tracks active intervals for articles in view
-// We'll keep an in-memory map of the current post_id associated with each article element
+const activeTimers = new Map(); 
 const articleIdMap = new Map();
-
-const authorTimeMap = new Map(); // Tracks total time per author
+const authorTimeMap = new Map(); 
 
 function fetchArticles() {
-
     const articles = document.body.getElementsByTagName("article");
 
     const rankingResult = getCategorizedData();
@@ -140,11 +126,11 @@ function fetchArticles() {
         if (!mappedArticle) return;
 
         const { post_id, author, like_button } = mappedArticle;
-        //const inView = isArticleInView(article);
 
         if(rankingResult) {
             addCategoryToArticle(article, author, post_id, rankingResult)
         }
+        
         // Store the post_id associated with this article element
         articleIdMap.set(article, post_id);
         // Ensure we have a tracking entry for this post_id
@@ -264,14 +250,6 @@ function showTopAuthorsToday(trackingData) {
 
     // Aggregate data by author
     const authorData = {}; 
-    // Structure will be:
-    // authorData = {
-    //   "Author Name": {
-    //       totalTimeToday: number,
-    //       totalLikes: number
-    //   },
-    //   ...
-    // }
 
     for (const post_id in trackingData) {
         const post = trackingData[post_id];
@@ -296,10 +274,7 @@ function showTopAuthorsToday(trackingData) {
         authorData[authorName].totalTimeToday += postTimeToday;
 
         // If post is liked, add it to author's total likes
-        // Assuming 'totalLikes' means number of liked posts by that author.
         if (post.is_liked) {
-            // If you only want to count each liked post once, just increment by 1.
-            // If you wanted to sum likes (or other metric), adjust accordingly.
             authorData[authorName].totalLikes += 1;
         }
     }
@@ -358,7 +333,6 @@ function showTopAuthorsToday(trackingData) {
     topAuthorsContainer.appendChild(table);
 
     // Append this container into trackingContainer
-    // Make sure trackingContainer exists by calling setupTrackingContainer()
     const container = setupTrackingContainer();
     container.appendChild(topAuthorsContainer);
 }
@@ -798,7 +772,6 @@ document.addEventListener('click', function buttonHandler(event) {
 
     if (button && !isProcessing) {
         isProcessing = true;
-        console.log("Button clicked");
         
         // Run your story sort logic
         // Initial check for the "Go Back" button
@@ -906,11 +879,9 @@ function storyRank(sort) {
         }
     });
 
-    console.log("sortedItems: ", sortedItems);
-
     // Maintain an array of occupied positions
-    const occupiedPositions = []; // Tracks taken positions (e.g., [2, 82, 162, ...])
-    const positionStep = 80; // Distance between positions (px)
+    const occupiedPositions = []; 
+    const positionStep = 80;
 
     // Add category badges and assign new positions
     sortedItems.forEach(item => {

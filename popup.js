@@ -69,14 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
               console.log(`Unpacked ${rule.key}:`, unpackedData[rule.key]);
             } catch (err) {
               console.error(`Error parsing ${rule.key}:`, err);
-              alert(`Error uploading ${rule.key}: Invalid JSON`);
             }
           };
           reader.readAsText(file);
         }
-        // } else {
-        //   console.warn(`No matching rule for file: ${fileName}`);
-        // }
       });
     }
   });
@@ -123,9 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
           user.category = 'C';
         }
       });
-
-      // Log the categorized data for verification
-      console.log("Categorized Data:", followingByImportance);
 
       // Store the categorized data in Chrome storage
       chrome.storage.local.set({ categorizedData: followingByImportance }, () => {
